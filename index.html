@@ -2,62 +2,173 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TableMate API</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <title>Aespalogy</title>
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">TableMate API</div>
-            <ul class="nav-links">
-                <li><a href="#overview">Overview</a></li>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#team">Team</a></li>
-                <li><a href="#stack">Tech Stack</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
+    <header class="header">
+        <div class="container">
+            <div class="header__inner">
+                <a class="header__logo" href="../aespology/aespology.html">Aespalogy</a> 
+                <nav>
+                    <a class="nav__link" href="../group/group.html">Reservation</a>
+                    <a class="nav__link" href="../faqs/faq.html">FAQS</a>
+                    <a class="nav__link" href="../aespology/profile.html">Profile</a>
+
+                </nav>
+            </div>
+        </div>
     </header>
-    <main>
-        <section id="overview">
-            <h1>Welcome to TableMate API</h1>
-            <p>Your solution for efficient restaurant reservation management.</p>
-        </section>
-        <section id="features">
-            <h2>Features</h2>
-            <ul>
-                <li>User Authentication and Authorization</li>
-                <li>Real-Time Table Availability</li>
-                <li>Reservation Management</li>
-                <li>Administrative Controls</li>
-                <li>Secure and Scalable Backend</li>
-            </ul>
-        </section>
-        <section id="team">
-            <h2>Meet Our Team</h2>
-            <ul>
-                <li>Abay Maral</li>
-                <li>Madikozha Issayev</li>
-                <li>Abzal Sydykbek</li>
-            </ul>
-        </section>
-        
-        <section id="contact">
-            <h2>Contact Us</h2>
-            <form>
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required>
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-                <label for="message">Message:</label>
-                <textarea id="message" name="message" required></textarea>
-                <button type="submit">Send</button>
-            </form>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2025 TableMate API. All rights reserved.</p>
-    </footer>
+    <div class="intro">
+        <div class="container">
+            <h2 class="intro__suptitle">Aespalogy</h2>
+            <h1 class="intro__title">Explore, Connect, Celebrate</h1>
+        </div>
+    </div>
+    
+    <div id="theme-toggle">
+        <label class="switch">
+          <input type="checkbox" id="theme-switcher" onclick="toggleTheme()">
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label">Dark Mode</span>
+    </div>
+
+    <section class="section">
+        <div class="container">
+            <div class="section__header">
+                <h3 class="section__suptitle">Group & Members</h3>
+                <h2 class="section_title">Your guide to Aespa</h2>
+                <div>
+                    <p class="section__text">We will be a bridge between you and the wonderful world of Aespa. In this section you can find out information about the group and its members. This way you can easily join our community of Aespa fans.</p>
+                </div>
+            </div>
+            <div class="about">
+                <div class="about__item">
+                    <div class="about__img">
+                        <img width="100%" height="100%" src="assets/images/Ningning.png" alt="">
+                    </div>
+                    <div class="about__text">Ningning</div>
+                </div>
+                <div class="about__item">
+                    <div class="about__img">
+                        <img width="100%" height="100%" src="assets/images/karina.png" alt="">
+                    </div>
+                    <div class="about__text">Karina</div>
+                </div>
+                <div class="about__item">
+                    <div class="about__img">
+                        <img width="100%" height="100%" src="assets/images/winter.png" alt="">
+                    </div> 
+                    <div class="about__text">Winter</div> 
+                </div>
+                <div class="about__item">
+                    <div class="about__img">
+                        <img width="100%" height="100%" src="assets/images/giselle.png" alt="">
+                    </div>
+                    <div class="about__text">Giselle</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="statistics">
+        <div class="container">
+            <div class="stat">
+                <div class="stat__item">
+                    <div class="stat__count">4</div>
+                    <div class="stat__text">Wins On KMA</div>
+                </div>
+                <div class="stat__item">
+                    <div class="stat__count">4</div>
+                    <div class="stat__text">Wins On Golden Disc Awards</div>
+                </div>
+                <div class="stat__item">
+                    <div class="stat__count">2</div>
+                    <div class="stat__text">Wins On MMA</div>
+                </div>
+                <div class="stat__item">
+                    <div class="stat__count">2</div>
+                    <div class="stat__text">Wins On MAMA</div>
+                </div>
+                <div class="stat__item">
+                    <div class="stat__count">2</div>
+                    <div class="stat__text">Wins in SMA</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="section">
+        <div class="container">
+            <div class="section__header">
+                <h3 class="section__suptitle">Merchandise</h3>
+                <h2 class="section_title">Amazing Products</h2>
+            </div>
+            <div class="services">
+                <div class="services__item">
+                    <img class="services__icon" src="assets/images/products/tshirt.png" alt="">
+                    <div class="services__title">T-Shirts</div>
+                    <div class="services__text">The most diverse and amazing T-shirt designs for every taste</div>
+                </div>
+                <div class="services__item">
+                    <img class="services__icon" src="assets/images/products/merchandise.png" alt="">
+                    <div class="services__title">Merchandise</div>
+                    <div class="services__text">A special merch created for Aespa and their fans to support their favorite idols.</div>
+                </div>
+                <div class="services__item">
+                    <img class="services__icon" src="assets/images/products/album.png" alt="">
+                    <div class="services__title">Albums</div>
+                    <div class="services__text">Albums in the Aespa style to capture and perpetuate the memory of the most memorable moments.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section section--devices">
+        <div class="container">
+            <div class="section__header">
+                <h3 style="color: white;" class="section__suptitle">Music</h3>
+                <h2 style="color: white;" class="section_title1">Enjoy the great music of Aespa</h2>
+            </div>
+            <div class="about">
+                <div class="about__item">
+                    <div class="about__img">
+                        <img width="100%" height="100%" src="assets/images/Armageddon.webp" alt="">
+                    </div>
+                    <div class="about__text">Armageddon</div>
+                </div>
+                <div class="about__item">
+                    <div class="about__img">
+                        <img width="100%" height="100%" src="assets/images/My world.jpg" alt="">
+                    </div>
+                    <div class="about__text">My World</div>
+                </div>
+                <div class="about__item">
+                    <div class="about__img">
+                        <img width="100%" height="100%" src="assets/images/savage.jpg" alt="">
+                    </div> 
+                    <div class="about__text">Savage</div> 
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="../aespology/assets/js/script.js"></script>
+    <script src="../localstorage/ls.js"></script>
 </body>
+
+<footer>
+    <div class="footer-content">
+        <p>&copy; 2024 Aespalogy. All Rights Reserved.</p>
+        <p>Main Office: 123 K-Pop Street, Seoul, South Korea</p>
+        <div class="creators">
+            <p>Creators:</p>
+            <ul>
+                <li>Abzal Sydylbek IT-2303</li>
+                <li>Abay Maral IT-2303</li>
+                <li>Raiymbek Serikkali IT-2303</li>
+            </ul>
+        </div>
+    </div>
+</footer>
+
 </html>
