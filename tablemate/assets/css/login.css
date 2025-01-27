@@ -1,0 +1,211 @@
+
+body {
+    font-family: "Montserrat", sans-serif;
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: black;
+}
+
+*, 
+*:before,
+*:after {
+box-sizing: border-box;
+}
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+}
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.intro{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    background: url("../images/intro.jpg") center no-repeat;
+    -webkit-background-size:cover;
+    background-size:cover;
+}
+.intro__inner{
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+
+}
+.intro__title{
+    color: #ffffff;
+    font-size: 40px;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1;
+   }
+.intro__suptitle{
+font-size: 85px;
+color: #ffffff;
+text-align: center;
+}
+.header{
+    padding-top: 30px;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+.header__inner{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.header__logo{
+    font-size: 30px;
+    font-weight: 700;
+    color: #ffffff;
+    transition: color .2s linear;
+    text-decoration: none;
+}
+.nav {
+    font-size: 14px;
+    text-transform: uppercase;
+}
+.nav__link{
+    display: inline-block;
+    vertical-align: top;
+    margin: 0 15px;
+    position: relative;
+    color: #ffffff;
+    text-decoration: none;
+    transition: color .1s linear;
+}
+.nav__link:after{
+    content: "";
+    display: block;
+    width: 100%;
+    opacity: 0;
+    height: 3px;
+    background-color: #9fa8ff;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1;
+    transition: opacity .1s linear;
+}
+.nav__link:hover{
+    color:#9fa8ff;
+}
+.header__logo:hover{
+    color:#9fa8ff;
+}
+.nav__link:hover:after{
+    opacity: 1;
+}
+
+.section{
+    width: 100%;
+    padding: 80px 0;
+    background: url();
+}
+.section__header{
+    width: 100%;
+    max-width: 950px;
+    margin: 0 auto 40px;
+    text-align: center;
+}
+.section__suptitle{
+    font-size: 24px;
+}
+.section_title{
+    font-size: 30px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.section_title:after{
+content: "";
+display: block;
+width: 60px;
+height: 3px;
+margin: 30px auto;
+}
+
+
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    
+}
+
+button {
+    background-color: #9FA8FF;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #7f8cfa;
+}
+
+.register_here {
+    background-color: #9FA8FF;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.register_here:hover {
+    background-color: #7f8cfa;
+}
+
+footer {
+    background-color: black;
+    color: #FFFFFF;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.footer-content p {
+    margin: 5px 0;
+    color: #9FA8FF;
+}
+
+.creators p {
+    font-weight: bold;
+    color: #5E32A6;
+}
+
+.creators ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.creators ul li {
+    color: #FFFFFF;
+    margin-bottom: 5px;
+}
+.login-container{
+    margin-top: 10%;
+    margin-bottom: 10%;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 300px;
+}
+
