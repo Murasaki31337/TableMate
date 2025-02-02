@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
-from database import db
-from models import UserSignup, UserLogin
-from auth.hashing import hash_password, verify_password
-from auth.jwt_handler import create_access_token
+from tablemate_api.database import db
+from tablemate_api.models import UserSignup, UserLogin
+from tablemate_api.auth.hashing import hash_password, verify_password
+from tablemate_api.auth.jwt_handler import create_access_token
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 

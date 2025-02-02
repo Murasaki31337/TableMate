@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from tablemate_api.auth.dependencies import get_current_user
+from tablemate_api.auth.dependecies import get_current_user
 
 router = APIRouter(prefix="/protected", tags=["Protected"])
 

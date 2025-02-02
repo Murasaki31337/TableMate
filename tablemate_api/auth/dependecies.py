@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from auth.jwt_handler import decode_access_token
-from database import db
+from tablemate_api.auth.jwt_handler import decode_access_token
+from tablemate_api.database import db
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 

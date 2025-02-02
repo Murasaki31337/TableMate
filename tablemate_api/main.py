@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from routes.auth_routes import router as auth_router
-from routes.protected_routes import router as protected_router
+from tablemate_api.routes.auth_routes import router as auth_router
+from tablemate_api.routes.protected_routes import router as protected_router
 
 app = FastAPI()
 
