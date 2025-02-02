@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic CRUD Operation</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 80%; margin: 0 auto; }
+        .navbar { background-color: #007bff; padding: 1rem; color: white; }
+        .form-control { padding: 0.5rem; width: 100%; margin-bottom: 1rem; }
+        .btn { background-color: #007bff; color: white; padding: 0.5rem 1rem; border: none; cursor: pointer; }
+        .btn:hover { background-color: #0056b3; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+        .table, .table th, .table td { border: 1px solid #ddd; }
+        .table th, .table td { padding: 1rem; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div>
+            <a href="/" style="color: white; text-decoration: none;">Basic CRUD Operation</a>
+        </div>
+    </nav>
+
+    <!-- Form Section -->
+    <div class="container my-5">
+        <h2>Create Item</h2>
+        <form id="item-form">
+            <div class="mb-3">
+                <label for="name" class="form-label">Item Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Item Description</label>
+                <input type="text" class="form-control" id="description" name="description" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="price" class="form-label">Item Price</label>
+                <input type="text" class="form-control" id="price" name="price" required>
+            </div>
+
+            <button type="submit" class="btn">Submit</button>
+        </form>
+    </div>
+
+    <!-- Items List -->
+    <div class="container">
+        <h2>Items List</h2>
+        <table class="table" id="items-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Items will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:8000"; // Your FastAPI backend URL
+
+        // Fetch and display items
+        async function fetchItems() {
+            try {
+                const response = await fetch(`${API_URL}/items/`);
+                const items = await response.json();
+                const itemsTableBody = document.querySelector("#items-table tbody");
+                itemsTableBody.innerHTML = ''; // Clear existing rows
+
+                items.forEach(item => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${item.name}</td>
+                        <td>${item.description}</td>
+                        <td>${item.price}</td>
+                    `;
+                    itemsTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error fetching items:", error);
+            }
+        }
+
+        // Handle form submission (POST request)
+        document.getElementById("item-form").addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const name = document.getElementById("name").value;
+            const description = document.getElementById("description").value;
+            const price = parseFloat(document.getElementById("price").value);
+
+            const item = { name, description, price };
+
+            try {
+                const response = await fetch(`${API_URL}/items/`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(item),
+                });
+
+                const newItem = await response.json();
+                console.log("Item created:", newItem);
+
+                // Fetch and update the list of items
+                fetchItems();
+
+                // Clear the form fields
+                document.getElementById("item-form").reset();
+            } catch (error) {
+                console.error("Error adding item:", error);
+            }
+        });
+
+        // Fetch items when the page loads
+        fetchItems();
+    </script>
+</body>
+</html>
