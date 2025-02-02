@@ -1,0 +1,22 @@
+# version: '3.8'
+
+services:
+  mongo:
+    image: mongo:6.0  # Use the version you prefer
+    container_name: mongodb_container
+    ports:
+      - "27017:27017"  # Expose MongoDB on localhost
+    volumes:
+      - ./data:/data/db  # Persist MongoDB data on your local machine
+  fastapi_app:
+      build: .
+      ports:
+        - "8000:8000"
+      depends_on:
+        - mongo
+      networks:
+        - app_network
+
+networks:
+  app_network:
+    driver: bridge
