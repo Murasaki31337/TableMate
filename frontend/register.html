@@ -8,6 +8,12 @@
     <script src="scripts.js"></script>
 </head>
 <body>
+    <div id="header-container"></div>
+        <script>
+                fetch("header.html")
+                .then(response => response.text())
+                .then(data => document.getElementById("header-container").innerHTML = data);
+        </script>
     <div class="container">
         <h2>Register</h2>
         <form id="register-form" onsubmit="register(event)">

@@ -67,10 +67,22 @@
     </style>
 </head>
 <body>
+    <div id="header-container"></div>
+    <script>
+        fetch("header.html")
+            .then(response => response.text())
+            .then(data => document.getElementById("header-container").innerHTML = data);
+    </script>
+
     <h1>Restaurant Details</h1>
     
     <div id="restaurant-details">
         <!-- Restaurant details will be displayed here -->
+    </div>
+
+    <!-- ✅ Fixed: Added missing tables-container -->
+    <div id="tables-container">
+        <!-- Tables will be loaded here -->
     </div>
 
     <button id="confirm-btn" onclick="confirmReservation()">Confirm Reservation</button>
@@ -99,7 +111,7 @@
                 }
 
                 const tablesContainer = document.getElementById('tables-container');
-                tablesContainer.innerHTML = '';
+                tablesContainer.innerHTML = ''; // Clear existing tables
 
                 Object.keys(data.table_types).forEach(tableType => {
                     const availableSeats = data.table_types[tableType];

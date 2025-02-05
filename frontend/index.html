@@ -48,6 +48,12 @@
     </style>
 </head>
 <body>
+    <div id="header-container"></div>
+        <script>
+                fetch("header.html")
+                .then(response => response.text())
+                .then(data => document.getElementById("header-container").innerHTML = data);
+        </script>
     <h1>Welcome to TableMate</h1>
 
     <div id="restaurants-container">
