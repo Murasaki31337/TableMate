@@ -9,7 +9,6 @@
     <h1>Your Profile</h1>
     
     <div id="profile-section">
-        <p><strong>Name:</strong> <span id="profile-name"></span></p>
         <p><strong>Email:</strong> <span id="profile-email"></span></p>
         <button onclick="logout()">Logout</button>
     </div>
@@ -25,7 +24,7 @@
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/users/me', {
+            const response = await fetch('http://127.0.0.1:8000/protected/dashboard', {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + token
@@ -37,7 +36,6 @@
             }
 
             const data = await response.json();
-            document.getElementById('profile-name').textContent = data.name;
             document.getElementById('profile-email').textContent = data.email;
 
         } catch (error) {
