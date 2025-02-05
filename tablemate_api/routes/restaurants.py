@@ -9,3 +9,16 @@ async def get_restaurants():
     for restaurant in restaurants:
         restaurant["_id"] = str(restaurant["_id"])  
     return restaurants
+
+
+@router.get("/{id}")
+async def get_restaurant_by_id(id: str):
+    try:
+        restaurant = await db.restaurants.find_one({"_id": ObjectId(id)})
+        if restaurant:
+            restaurant["_id"] = str(restaurant["_id"])  
+            return restaurant
+        else:
+            raise HTTPException(status_code=404, detail="Restaurant not found")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid ID format: {e}")
