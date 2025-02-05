@@ -53,7 +53,7 @@
             const data = await response.json();
             const token = data.access_token;
 
-            document.getElementById('message').innerHTML = 'Login successful! Access token: ' + token;
+            document.getElementById('message').innerHTML = 'Login successful! User ' + email + ', Welcome!';
             localStorage.setItem('access_token', token); // Save the token to localStorage
         } catch (error) {
             document.getElementById('message').innerHTML = 'Error: ' + error.message;
