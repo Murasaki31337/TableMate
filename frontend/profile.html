@@ -4,21 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile - TableMate</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="scripts.js"></script>
 </head>
 <body>
     <div id="header-container"></div>
-        <script>
-                fetch("header.html")
-                .then(response => response.text())
-                .then(data => document.getElementById("header-container").innerHTML = data);
-        </script>
+    <script>
+        fetch("header.html")
+            .then(response => response.text())
+            .then(data => document.getElementById("header-container").innerHTML = data);
+    </script>
+
     <div class="container">
         <h2>Profile</h2>
-        <p><strong>Name:</strong> <span id="profile-name"></span></p>
+        <p id="welcome-message"></p>
         <p><strong>Email:</strong> <span id="profile-email"></span></p>
         <button onclick="logout()">Logout</button>
     </div>
+
+    <script>
+    async function fetchProfile() {
+        const token = localStorage.getItem("access_token");
+        const welcomeMessage = document.getElementById("welcome-message");
+        const emailField = document.getElementById("profile-email");
+
+        if (!token) {
+            welcomeMessage.innerHTML = "You are not logged in. Please <a href='login.html'>Login</a>.";
+            emailField.style.display = "none";
+            return;
+        }
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/users/me/email", {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch email.");
+            }
+
+            const data = await response.json();
+            emailField.textContent = data.email;
+            welcomeMessage.innerHTML = `Welcome, <strong>${data.email}</strong>!`;
+
+        } catch (error) {
+            welcomeMessage.innerHTML = "Error: " + error.message;
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem("access_token");
+        window.location.href = "login.html";
+    }
+
+    document.addEventListener("DOMContentLoaded", fetchProfile);
+    </script>
 </body>
 </html>
