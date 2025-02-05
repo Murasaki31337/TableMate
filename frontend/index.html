@@ -81,7 +81,7 @@
                     restaurantDiv.classList.add('restaurant-item');
                     restaurantDiv.textContent = restaurant.name || 'Unnamed Restaurant';  // Display restaurant name
                     restaurantDiv.onclick = () => {
-                        window.location.href = `reservation.html?id=${restaurant._id}`;
+                        window.location.href = `restaurant.html?name=${restaurant.name}`;
                     };
                     restaurantsList.appendChild(restaurantDiv);
                 });
