@@ -3,58 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TableMate API - Login</title>
+    <title>TableMate - Restaurants</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        
+        h1 {
+            margin-top: 20px;
+        }
+        
+        #restaurants-container {
+            margin: 20px auto;
+            width: 80%;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .restaurant-item {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .restaurant-item:last-child {
+            border-bottom: none;
+        }
+
+        .restaurant-item:hover {
+            background-color: #f1f1f1;
+        }
+
+        #message {
+            margin-top: 20px;
+            color: red;
+        }
+    </style>
 </head>
 <body>
-    <h1>Login to TableMate</h1>
-    
-    <div id="login-section">
-        <input type="email" id="email" placeholder="Email" required><br>
-        <input type="password" id="password" placeholder="Password" required><br>
-        <button onclick="login()">Login</button>
+    <h1>Welcome to TableMate</h1>
+
+    <div id="restaurants-container">
+        <h2>Available Restaurants</h2>
+        <div id="restaurants-list"></div>
     </div>
-    
+
     <div id="message"></div>
 
     <script>
-    async function login() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+        // Function to fetch and display restaurants
+        async function getRestaurants() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/restaurants/');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch restaurants');
+                }
 
-        if (!email || !password) {
-            document.getElementById('message').innerHTML = 'Please enter both email and password.';
-            return;
-        }
+                const restaurants = await response.json();
+                
+                const restaurantsList = document.getElementById('restaurants-list');
+                restaurantsList.innerHTML = ''; // Clear existing content
 
-        const loginData = {
-            email: email,
-            password: password
-        };
+                if (restaurants.length === 0) {
+                    restaurantsList.innerHTML = '<p>No restaurants available.</p>';
+                    return;
+                }
 
-        try {
-            const response = await fetch('http://127.0.0.1:8000/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',  // Change to application/json
-                },
-                body: JSON.stringify(loginData)  // Send JSON data
-            });
-            // alert(loginData.password)  
-            if (!response.ok) {
-                throw new Error('Login failed. Invalid credentials.');
+                restaurants.forEach(restaurant => {
+                    const restaurantDiv = document.createElement('div');
+                    restaurantDiv.classList.add('restaurant-item');
+                    restaurantDiv.textContent = restaurant.name || 'Unnamed Restaurant';  // Display restaurant name
+                    restaurantDiv.onclick = () => {
+                        alert(`You selected: ${restaurant.name}`);  // Action on click
+                    };
+                    restaurantsList.appendChild(restaurantDiv);
+                });
+            } catch (error) {
+                document.getElementById('message').textContent = 'Error: ' + error.message;
             }
-
-            const data = await response.json();
-            const token = data.access_token;
-
-            document.getElementById('message').innerHTML = 'Login successful! Access token: ' + token;
-            localStorage.setItem('access_token', token); // Save the token to localStorage
-        } catch (error) {
-            document.getElementById('message').innerHTML = 'Error: ' + error.message;
         }
-    }
-</script>
 
-
+        // Call the function when the page loads
+        window.onload = getRestaurants;
+    </script>
 </body>
 </html>

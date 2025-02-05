@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Details</title>
+</head>
+<body>
+    <h1>Restaurant Details</h1>
+    
+    <div id="restaurant-details">
+        <!-- Restaurant details will be displayed here -->
+    </div>
+
+    <script>
+        async function getRestaurantDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const restaurantId = urlParams.get('id');  // Get the restaurant ID from the query string
+
+            if (!restaurantId) {
+                document.getElementById('restaurant-details').innerHTML = 'Restaurant ID not provided.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/restaurants/${restaurantId}`);
+                const data = await response.json();
+
+                if (!data) {
+                    document.getElementById('restaurant-details').innerHTML = 'Restaurant not found.';
+                    return;
+                }
+
+                document.getElementById('restaurant-details').innerHTML = `
+                    <h2>${data.name}</h2>
+                    <p><strong>Location:</strong> ${data.location}</p>
+                    <p><strong>Details:</strong> ${data.details}</p>
+                `;
+            } catch (error) {
+                document.getElementById('restaurant-details').innerHTML = 'Error fetching restaurant details: ' + error.message;
+            }
+        }
+
+        window.onload = getRestaurantDetails;
+    </script>
+</body>
+</html>

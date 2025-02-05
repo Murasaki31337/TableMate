@@ -6,5 +6,3 @@ MONGO_DETAILS = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 client = AsyncIOMotorClient(MONGO_DETAILS)
 
 db = client.tablemate
-
-items_collection = db.get_collection("users")
