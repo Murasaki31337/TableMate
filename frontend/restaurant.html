@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Details</title>
+</head>
+<body>
+    <div id="header-container"></div>
+        <script>
+                fetch("header.html")
+                .then(response => response.text())
+                .then(data => document.getElementById("header-container").innerHTML = data);
+        </script>
+    <h1>Restaurant Details</h1>
+    
+    <div id="restaurant-details">
+        <!-- Restaurant details will be displayed here -->
+    </div>
+
+    <script>
+        async function getRestaurantDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const restaurantName = urlParams.get('name');  // Get the restaurant ID from the query string
+
+            if (!restaurantName) {
+                document.getElementById('restaurant-details').innerHTML = 'Restaurant Name not provided.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/restaurants/${restaurantName}`);
+                const data = await response.json();
+
+                if (!data) {
+                    document.getElementById('restaurant-details').innerHTML = 'Restaurant not found.';
+                    return;
+                }
+
+                document.getElementById('restaurant-details').innerHTML = `
+                    <h2>${data.name}</h2>
+                    <p><strong>Location:</strong> ${data.address}</p>
+                    <p><strong>Details:</strong> ${data.details}</p>
+                    <button id="reservation-btn" onclick="redirectToReservation('${data.name}')">Make a Reservation</button>
+                `;
+            } catch (error) {
+                document.getElementById('restaurant-details').innerHTML = 'Error fetching restaurant details: ' + error.message;
+            }
+        }
+        function redirectToReservation(restaurantName) {
+            window.location.href = `reservation.html?name=${restaurantName}`;
+        }
+        window.onload = getRestaurantDetails;
+    </script>
+</body>
+</html>

@@ -3,52 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TableMate API - Profile</title>
+    <title>Profile - TableMate</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="scripts.js"></script>
 </head>
 <body>
-    <h1>Your Profile</h1>
-    
-    <div id="profile-section">
+    <div id="header-container"></div>
+        <script>
+                fetch("header.html")
+                .then(response => response.text())
+                .then(data => document.getElementById("header-container").innerHTML = data);
+        </script>
+    <div class="container">
+        <h2>Profile</h2>
+        <p><strong>Name:</strong> <span id="profile-name"></span></p>
         <p><strong>Email:</strong> <span id="profile-email"></span></p>
         <button onclick="logout()">Logout</button>
     </div>
-
-    <div id="message"></div>
-
-    <script>
-    async function fetchProfile() {
-        const token = localStorage.getItem('access_token');
-        if (!token) {
-            window.location.href = 'login.html';
-            return;
-        }
-
-        try {
-            const response = await fetch('http://127.0.0.1:8000/protected/dashboard', {
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch profile.');
-            }
-
-            const data = await response.json();
-            document.getElementById('profile-email').textContent = data.email;
-
-        } catch (error) {
-            document.getElementById('message').innerHTML = 'Error: ' + error.message;
-        }
-    }
-
-    function logout() {
-        localStorage.removeItem('access_token');
-        window.location.href = 'login.html';
-    }
-
-    document.addEventListener("DOMContentLoaded", fetchProfile);
-    </script>
 </body>
 </html>

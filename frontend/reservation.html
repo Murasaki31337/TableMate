@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make a Reservation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            margin-bottom: 20px;
+        }
+
+        #tables-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .table-item {
+            padding: 15px;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 150px;
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .table-item:hover {
+            background-color: #e0ffe0;
+            transform: scale(1.05);
+        }
+
+        .selected {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #confirm-btn {
+            margin-top: 20px;
+            padding: 12px 25px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #confirm-btn:hover {
+            background-color: #0056b3;
+        }
+
+        #message {
+            margin-top: 20px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+    <script>
+        fetch("header.html")
+            .then(response => response.text())
+            .then(data => document.getElementById("header-container").innerHTML = data);
+    </script>
+
+    <h1>Restaurant Details</h1>
+    
+    <div id="restaurant-details">
+        <!-- Restaurant details will be displayed here -->
+    </div>
+
+    <!-- ✅ Fixed: Added missing tables-container -->
+    <div id="tables-container">
+        <!-- Tables will be loaded here -->
+    </div>
+
+    <button id="confirm-btn" onclick="confirmReservation()">Confirm Reservation</button>
+
+    <p id="message"></p>
+
+    <script>
+        let selectedTableType = null;
+
+        async function loadTableTypes() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const restaurantName = urlParams.get('name');
+
+            if (!restaurantName) {
+                document.getElementById('message').textContent = 'Restaurant name not provided.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/restaurants/${encodeURIComponent(restaurantName)}/reservations`);
+                const data = await response.json();
+
+                if (data.table_types && Object.keys(data.table_types).length === 0) {
+                    document.getElementById('message').textContent = 'No tables available for reservation.';
+                    return;
+                }
+
+                const tablesContainer = document.getElementById('tables-container');
+                tablesContainer.innerHTML = ''; // Clear existing tables
+
+                Object.keys(data.table_types).forEach(tableType => {
+                    const availableSeats = data.table_types[tableType];
+                    const tableDiv = document.createElement('div');
+                    tableDiv.classList.add('table-item');
+                    tableDiv.textContent = `${tableType.charAt(0).toUpperCase() + tableType.slice(1)} - ${availableSeats} seats available`;
+
+                    tableDiv.onclick = () => selectTable(tableType, tableDiv);
+
+                    tablesContainer.appendChild(tableDiv);
+                });
+            } catch (error) {
+                document.getElementById('message').textContent = 'Error fetching tables: ' + error.message;
+            }
+        }
+
+        function selectTable(tableType, element) {
+            const previousSelected = document.querySelector('.selected');
+            if (previousSelected) {
+                previousSelected.classList.remove('selected');
+            }
+
+            element.classList.add('selected');
+            selectedTableType = tableType;
+        }
+
+        async function confirmReservation() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const restaurantName = urlParams.get('name');
+
+            if (!selectedTableType) {
+                document.getElementById('message').textContent = 'Please select a table before confirming.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/restaurants/reservations`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        restaurant_name: restaurantName,
+                        table_type: selectedTableType
+                    })
+                });
+
+                if (response.ok) {
+                    document.getElementById('message').style.color = 'green';
+                    document.getElementById('message').textContent = 'Reservation confirmed!';
+                } else {
+                    const errorData = await response.text();
+                    throw new Error(errorData);
+                }
+            } catch (error) {
+                document.getElementById('message').style.color = 'red';
+                document.getElementById('message').textContent = 'Error confirming reservation: ' + error.message;
+            }
+        }
+
+        window.onload = loadTableTypes;
+    </script>
+</body>
+</html>

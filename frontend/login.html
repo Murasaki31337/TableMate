@@ -6,6 +6,12 @@
     <title>TableMate API - Login</title>
 </head>
 <body>
+    <div id="header-container"></div>
+        <script>
+                fetch("header.html")
+                .then(response => response.text())
+                .then(data => document.getElementById("header-container").innerHTML = data);
+        </script>
     <h1>Login to TableMate</h1>
     
     <div id="login-section">
@@ -28,7 +34,7 @@
 
         const loginData = {
             email: email,
-            password: password
+            password: password,
         };
 
         try {
@@ -39,7 +45,7 @@
                 },
                 body: JSON.stringify(loginData)  // Send JSON data
             });
-            // alert(loginData.password)  
+
             if (!response.ok) {
                 throw new Error('Login failed. Invalid credentials.');
             }
