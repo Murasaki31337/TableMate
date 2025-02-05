@@ -3,58 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TableMate API - Login</title>
+    <title>TableMate API</title>
 </head>
 <body>
-    <h1>Login to TableMate</h1>
-    
-    <div id="login-section">
-        <input type="email" id="email" placeholder="Email" required><br>
-        <input type="password" id="password" placeholder="Password" required><br>
-        <button onclick="login()">Login</button>
-    </div>
-    
-    <div id="message"></div>
-
-    <script>
-    async function login() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-
-        if (!email || !password) {
-            document.getElementById('message').innerHTML = 'Please enter both email and password.';
-            return;
-        }
-
-        const loginData = {
-            email: email,
-            password: password
-        };
-
-        try {
-            const response = await fetch('http://127.0.0.1:8000/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',  // Change to application/json
-                },
-                body: JSON.stringify(loginData)  // Send JSON data
-            });
-            // alert(loginData.password)  
-            if (!response.ok) {
-                throw new Error('Login failed. Invalid credentials.');
-            }
-
-            const data = await response.json();
-            const token = data.access_token;
-
-            document.getElementById('message').innerHTML = 'Login successful! Access token: ' + token;
-            localStorage.setItem('access_token', token); // Save the token to localStorage
-        } catch (error) {
-            document.getElementById('message').innerHTML = 'Error: ' + error.message;
-        }
-    }
-</script>
-
+    <h1>Welcome to TableMate</h1>
+    <p>Your go-to restaurant reservation system.</p>
+    <a href="login.html"><button>Login</button></a>
+    <a href="register.html"><button>Register</button></a>
+    <a href="profile.html"><button>Profile</button></a>
 
 </body>
 </html>
