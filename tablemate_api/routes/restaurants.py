@@ -68,3 +68,49 @@ async def make_reservation(reservation: dict):
     )
 
     return {"message": "Reservation successful!"}
+
+
+@router.put("/name/{restaurant_name}")
+async def update_restaurant(restaurant_name: str, update_data: dict):
+    """
+    Update restaurant details (name, address, and details) using restaurant name.
+    """
+    existing_restaurant = await db.restaurants.find_one({"name": restaurant_name})
+    if not existing_restaurant:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
+
+    update_query = {k: v for k, v in update_data.items() if v is not None}
+    if not update_query:
+        raise HTTPException(status_code=400, detail="No valid data provided")
+
+    result = await db.restaurants.update_one({"name": restaurant_name}, {"$set": update_query})
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=500, detail="Failed to update restaurant")
+
+    return {"message": "Restaurant updated successfully"}
+
+
+# 2️⃣ **Update Reservation Quantity**
+@router.put("/name/{restaurant_name}/reservations/update")
+async def update_reservation(restaurant_name: str, update_data: dict):
+    """
+    Update the reservation quantity for a specific table type in a restaurant.
+    """
+    table_type = update_data.get("table_type")
+    quantity = update_data.get("quantity")
+
+    if not table_type or quantity is None:
+        raise HTTPException(status_code=400, detail="Table type and quantity are required")
+
+    restaurant = await db.restaurants.find_one({"name": restaurant_name})
+    if not restaurant:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
+
+    update_query = {f"table_types.{table_type}": quantity}
+    result = await db.restaurants.update_one({"name": restaurant_name}, {"$set": update_query})
+
+    if result.modified_count == 0:
+        raise HTTPException(status_code=500, detail="Failed to update reservation")
+
+    return {"message": f"Reservation for {table_type} updated to {quantity}"}

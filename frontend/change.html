@@ -1,9 +1,9 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant Management</title>
+    <title>Restaurant & Reservation Management</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -71,16 +71,6 @@
             background-color: #c82333;
         }
 
-        .reservation-item {
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
         .message {
             padding: 10px;
             margin: 10px 0;
@@ -104,51 +94,41 @@
             <h2>Restaurant Details</h2>
             <div class="form-group">
                 <label for="name">Restaurant Name:</label>
-                <input type="text" id="name" readonly>
+                <input type="text" id="name">
             </div>
             <div class="form-group">
-                <label for="cuisine">Cuisine Type:</label>
-                <input type="text" id="cuisine">
+                <label for="details">Restaurant Details:</label>
+                <textarea id="details"></textarea>
             </div>
             <div class="form-group">
                 <label for="address">Address:</label>
                 <input type="text" id="address">
             </div>
-            <div class="form-group">
-                <label for="availability">Available Tables:</label>
-                <input type="number" id="availability" min="0">
-            </div>
             <button class="primary-btn" onclick="updateRestaurant()">Update Restaurant Details</button>
-            <button class="delete-btn" onclick="deleteRestaurant()">Delete Restaurant</button>
         </div>
 
         <div class="section">
-            <h2>Reservations</h2>
-            <div class="form-group">
-                <h3>Add New Reservation</h3>
-                <label for="customer">Customer Name:</label>
-                <input type="text" id="customer">
-                <label for="table_type">Table Type:</label>
-                <select id="table_type">
-                    <option value="standard">Standard</option>
-                    <option value="vip">VIP</option>
-                </select>
-                <label for="date">Date:</label>
-                <input type="datetime-local" id="date">
-                <button class="primary-btn" onclick="addReservation()">Add Reservation</button>
-            </div>
-            <div id="reservations-list"></div>
+            <h2>Reservation Management</h2>
+            <label for="table_type">Table Type:</label>
+            <select id="table_type">
+                <option value="couple">Couple</option>
+                <option value="family">Family</option>
+                <option value="party">Party</option>
+            </select>
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" min="0">
+            <button class="primary-btn" onclick="updateReservation()">Update Reservation</button>
         </div>
 
         <div id="message"></div>
     </div>
 
     <script>
-        let restaurantName;
+        let restaurantId;
 
         async function loadRestaurantData() {
             const urlParams = new URLSearchParams(window.location.search);
-            restaurantName = urlParams.get('name');
+            const restaurantName = urlParams.get('name');
 
             if (!restaurantName) {
                 showMessage('Error: No restaurant name provided.', 'error');
@@ -160,143 +140,75 @@
                 if (!response.ok) throw new Error('Failed to fetch restaurant data.');
 
                 const data = await response.json();
+                restaurantId = data._id.$oid; // Store restaurant ID for updating
                 document.getElementById('name').value = data.name;
-                document.getElementById('cuisine').value = data.cuisine || '';
+                document.getElementById('details').value = data.details || '';
                 document.getElementById('address').value = data.address || '';
-                document.getElementById('availability').value = data.availability || 0;
-                
-                await loadReservations();
             } catch (error) {
                 showMessage(error.message, 'error');
             }
         }
 
-        async function loadReservations() {
+        async function loadReservationData() {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${restaurantName}/reservations`);
+                const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${document.getElementById('name').value}/reservations`);
                 if (!response.ok) throw new Error('Failed to fetch reservations.');
 
                 const reservations = await response.json();
-                const reservationsList = document.getElementById('reservations-list');
-                reservationsList.innerHTML = '<h3>Current Reservations</h3>';
-
-                if (reservations.length === 0) {
-                    reservationsList.innerHTML += '<p>No reservations found.</p>';
-                    return;
+                const selectedTableType = document.getElementById('table_type').value;
+                if (reservations.table_types[selectedTableType] !== undefined) {
+                    document.getElementById('quantity').value = reservations.table_types[selectedTableType];
                 }
-
-                reservations.forEach(reservation => {
-                    const reservationDiv = document.createElement('div');
-                    reservationDiv.className = 'reservation-item';
-                    
-                    const details = document.createElement('div');
-                    details.innerHTML = `
-                        <strong>${reservation.customer}</strong><br>
-                        Table: ${reservation.table_type}<br>
-                        Date: ${new Date(reservation.date).toLocaleString()}
-                    `;
-                    
-                    const actions = document.createElement('div');
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.textContent = 'Cancel';
-                    deleteBtn.className = 'delete-btn';
-                    deleteBtn.onclick = () => deleteReservation(reservation._id);
-                    
-                    actions.appendChild(deleteBtn);
-                    reservationDiv.appendChild(details);
-                    reservationDiv.appendChild(actions);
-                    reservationsList.appendChild(reservationDiv);
-                });
             } catch (error) {
                 showMessage(error.message, 'error');
             }
         }
 
         async function updateRestaurant() {
-            const restaurantData = {
-                cuisine: document.getElementById('cuisine').value,
-                address: document.getElementById('address').value,
-                availability: parseInt(document.getElementById('availability').value)
-            };
+    const restaurantData = {
+        name: document.getElementById('name').value,
+        details: document.getElementById('details').value,
+        address: document.getElementById('address').value
+    };
 
-            try {
-                const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${restaurantName}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(restaurantData)
-                });
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${encodeURIComponent(document.getElementById('name').value)}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(restaurantData)
+        });
 
-                if (!response.ok) throw new Error('Failed to update restaurant details.');
-                showMessage('Restaurant details updated successfully!', 'success');
-                await loadRestaurantData();
-            } catch (error) {
-                showMessage(error.message, 'error');
-            }
-        }
+        if (!response.ok) throw new Error("Failed to update restaurant details.");
+        showMessage("Restaurant details updated successfully!", "success");
+    } catch (error) {
+        showMessage(error.message, "error");
+    }
+}
 
-        async function deleteRestaurant() {
-            if (!confirm('Are you sure you want to delete this restaurant? This action cannot be undone.')) {
-                return;
-            }
 
-            try {
-                const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${restaurantName}`, {
-                    method: 'DELETE'
-                });
+async function updateReservation() {
+    const tableType = document.getElementById("table_type").value;
+    const quantity = parseInt(document.getElementById("quantity").value);
 
-                if (!response.ok) throw new Error('Failed to delete restaurant.');
-                showMessage('Restaurant deleted successfully!', 'success');
-                setTimeout(() => window.location.href = 'restaurants.html', 2000);
-            } catch (error) {
-                showMessage(error.message, 'error');
-            }
-        }
+    const reservationData = {
+        table_type: tableType,
+        quantity: quantity
+    };
 
-        async function addReservation() {
-            const reservationData = {
-                customer: document.getElementById('customer').value,
-                table_type: document.getElementById('table_type').value,
-                date: document.getElementById('date').value,
-                restaurant_name: restaurantName
-            };
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${encodeURIComponent(document.getElementById('name').value)}/reservations/update`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(reservationData)
+        });
 
-            try {
-                const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${restaurantName}/reservations`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(reservationData)
-                });
+        if (!response.ok) throw new Error("Failed to update reservation.");
+        showMessage("Reservation updated successfully!", "success");
+    } catch (error) {
+        showMessage(error.message, "error");
+    }
+}
 
-                if (!response.ok) throw new Error('Failed to add reservation.');
-                showMessage('Reservation added successfully!', 'success');
-                
-                // Clear form
-                document.getElementById('customer').value = '';
-                document.getElementById('date').value = '';
-                
-                await loadReservations();
-            } catch (error) {
-                showMessage(error.message, 'error');
-            }
-        }
-
-        async function deleteReservation(reservationId) {
-            if (!confirm('Are you sure you want to cancel this reservation?')) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${restaurantName}/reservations/${reservationId}`, {
-                    method: 'DELETE'
-                });
-
-                if (!response.ok) throw new Error('Failed to delete reservation.');
-                showMessage('Reservation cancelled successfully!', 'success');
-                await loadReservations();
-            } catch (error) {
-                showMessage(error.message, 'error');
-            }
-        }
 
         function showMessage(message, type) {
             const messageDiv = document.getElementById('message');
@@ -305,7 +217,10 @@
             setTimeout(() => messageDiv.textContent = '', 5000);
         }
 
-        window.onload = loadRestaurantData;
+        window.onload = () => {
+            loadRestaurantData();
+            loadReservationData();
+        };
     </script>
 </body>
-</html> -->
+</html>
