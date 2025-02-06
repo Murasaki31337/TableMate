@@ -1,1 +1,99 @@
-<p>awd </p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Restaurants</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            margin-top: 20px;
+        }
+
+        #restaurants-container {
+            margin: 20px auto;
+            width: 80%;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .restaurant-item {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .restaurant-item:last-child {
+            border-bottom: none;
+        }
+
+        .restaurant-item:hover {
+            background-color: #f1f1f1;
+        }
+
+        #message {
+            margin-top: 20px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+    <script>
+        fetch("header.html")
+            .then(response => response.text())
+            .then(data => document.getElementById("header-container").innerHTML = data);
+    </script>
+
+    <h1>Manage Restaurants</h1>
+
+    <div id="restaurants-container">
+        <h2>Available Restaurants</h2>
+        <div id="restaurants-list"></div>
+    </div>
+
+    <div id="message"></div>
+
+    <script>
+        async function getRestaurants() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/restaurants/');
+                if (!response.ok) throw new Error(`Failed to fetch restaurants: ${response.status}`);
+
+                const restaurants = await response.json();
+                const restaurantsList = document.getElementById('restaurants-list');
+                restaurantsList.innerHTML = ''; // Clear previous list
+
+                if (restaurants.length === 0) {
+                    restaurantsList.innerHTML = '<p>No restaurants available.</p>';
+                    return;
+                }
+
+                restaurants.forEach(restaurant => {
+                    const restaurantDiv = document.createElement('div');
+                    restaurantDiv.classList.add('restaurant-item');
+                    restaurantDiv.textContent = restaurant.name || 'Unnamed Restaurant';
+                    restaurantDiv.onclick = () => {
+                        window.location.href = `change.html?id=${restaurant.id}`;
+                    };
+                    restaurantsList.appendChild(restaurantDiv);
+                });
+            } catch (error) {
+                document.getElementById('message').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        window.onload = getRestaurants;
+    </script>
+</body>
+</html>
