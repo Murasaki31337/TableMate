@@ -9,9 +9,10 @@
     <div id="header-container"></div>
     <script>
         fetch("header.html")
-            .then(response => response.text())
-            .then(data => document.getElementById("header-container").innerHTML = data);
+        .then(response => response.text())
+        .then(data => document.getElementById("header-container").innerHTML = data);
     </script>
+
     <h1>Register for TableMate</h1>
     
     <div id="register-section">
@@ -19,7 +20,9 @@
         <input type="password" id="password" placeholder="Password" required><br>
         <button onclick="register()">Register</button>
     </div>
-    
+
+    <p>Already have an account? <button onclick="redirectToLogin()">Go to Login</button></p>
+
     <div id="message"></div>
 
     <script>
@@ -27,7 +30,7 @@
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
 
-        if ( !email || !password) {
+        if (!email || !password) {
             document.getElementById('message').innerHTML = 'Please fill in all fields.';
             return;
         }
@@ -40,9 +43,7 @@
         try {
             const response = await fetch('http://127.0.0.1:8000/auth/signup', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(registerData)
             });
 
@@ -50,11 +51,20 @@
                 throw new Error('Registration failed. Please try again.');
             }
 
-            document.getElementById('message').innerHTML = 'Registration successful! You can now <a href="login.html">login</a>.';
+            document.getElementById('message').innerHTML = 'Registration successful! Redirecting to login...';
+            
+            // ✅ Redirect to login page after 2 seconds
+            setTimeout(() => {
+                window.location.href = "login.html";
+            }, 2000);
 
         } catch (error) {
             document.getElementById('message').innerHTML = 'Error: ' + error.message;
         }
+    }
+
+    function redirectToLogin() {
+        window.location.href = "login.html";
     }
     </script>
 </body>

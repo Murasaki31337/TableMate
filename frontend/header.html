@@ -12,27 +12,19 @@ Add this in the beginning!
     <nav>
         <a href="index.html">Home</a>
         <a href="profile.html" id="profile-link">Profile</a>
-        <a href="login.html" id="login-link">Login</a>
-        <a href="register.html" id="register-link">Register</a>
-        <button id="logout-btn" onclick="logout()" style="display: none;">Logout</button>
     </nav>
 </header>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const token = localStorage.getItem("access_token");
-
-    if (token) {
-        document.getElementById("login-link").style.display = "none";
-        document.getElementById("register-link").style.display = "none";
-        document.getElementById("logout-btn").style.display = "inline-block";
-    }
+    fetch("header.html")
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById("header-container").innerHTML = data;
+            updateHeader(); // ✅ Call after header is loaded
+        });
 });
 
-function logout() {
-    localStorage.removeItem("access_token");
-    window.location.href = "login.html";
-}
 </script>
 
 <style>
@@ -66,4 +58,3 @@ button {
     color: red;
 }
 </style>
-

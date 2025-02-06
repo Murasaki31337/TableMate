@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from tablemate_api.auth.dependecies import get_current_user  # Import your authentication dependency
+from tablemate_api.auth.dependencies import get_current_user  # Import your authentication dependency
 
 router = APIRouter(prefix="/users", tags=["Users"])
 

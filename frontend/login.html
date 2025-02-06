@@ -7,11 +7,12 @@
 </head>
 <body>
     <div id="header-container"></div>
-        <script>
-                fetch("header.html")
-                .then(response => response.text())
-                .then(data => document.getElementById("header-container").innerHTML = data);
-        </script>
+    <script>
+        fetch("header.html")
+        .then(response => response.text())
+        .then(data => document.getElementById("header-container").innerHTML = data);
+    </script>
+
     <h1>Login to TableMate</h1>
     
     <div id="login-section">
@@ -19,7 +20,9 @@
         <input type="password" id="password" placeholder="Password" required><br>
         <button onclick="login()">Login</button>
     </div>
-    
+
+    <p>Don't have an account? <button onclick="redirectToRegister()">Go to Register</button></p>
+
     <div id="message"></div>
 
     <script>
@@ -40,10 +43,8 @@
         try {
             const response = await fetch('http://127.0.0.1:8000/auth/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',  // Change to application/json
-                },
-                body: JSON.stringify(loginData)  // Send JSON data
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(loginData)
             });
 
             if (!response.ok) {
@@ -51,16 +52,21 @@
             }
 
             const data = await response.json();
-            const token = data.access_token;
+            localStorage.setItem("access_token", data.access_token);
 
-            document.getElementById('message').innerHTML = 'Login successful! User ' + email + ', Welcome!';
-            localStorage.setItem('access_token', token); // Save the token to localStorage
+            document.getElementById('message').innerHTML = 'Login successful! Redirecting to profile...';
+
+            setTimeout(() => {
+                window.location.href = "profile.html";
+            }, 2000);
         } catch (error) {
             document.getElementById('message').innerHTML = 'Error: ' + error.message;
         }
     }
-</script>
 
-
+    function redirectToRegister() {
+        window.location.href = "register.html";
+    }
+    </script>
 </body>
 </html>
