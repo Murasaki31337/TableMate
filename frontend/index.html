@@ -51,8 +51,12 @@
     <div id="header-container"></div>
         <script>
                 fetch("header.html")
-                .then(response => response.text())
-                .then(data => document.getElementById("header-container").innerHTML = data);
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById("header-container").innerHTML = data;
+        updateHeader();  // Run AFTER header is loaded
+    });
+
         </script>
     <h1>Welcome to TableMate</h1>
 
