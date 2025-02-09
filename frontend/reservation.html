@@ -80,7 +80,6 @@
         <!-- Restaurant details will be displayed here -->
     </div>
 
-    <!-- ✅ Fixed: Added missing tables-container -->
     <div id="tables-container">
         <!-- Tables will be loaded here -->
     </div>
@@ -160,8 +159,14 @@
                 });
 
                 if (response.ok) {
+                    // Save reservation status in localStorage (userId and reserved)
+                    const email = localStorage.getItem("email")
+                    localStorage.setItem(email, restaurantName)
+                    
                     document.getElementById('message').style.color = 'green';
                     document.getElementById('message').textContent = 'Reservation confirmed!';
+
+                    window.location.href = 'profile.html';
                 } else {
                     const errorData = await response.text();
                     throw new Error(errorData);

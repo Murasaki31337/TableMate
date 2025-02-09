@@ -17,6 +17,8 @@
         <h2>Profile</h2>
         <p id="welcome-message"></p>
         <p><strong>Email:</strong> <span id="profile-email"></span></p>
+        <p><strong>Reservation:</strong> <span id="profile-reservation"></span></p>
+
         <button onclick="logout()">Logout</button>
         
         <!-- Admin-only button -->
@@ -28,11 +30,13 @@
         const token = localStorage.getItem("access_token");
         const welcomeMessage = document.getElementById("welcome-message");
         const emailField = document.getElementById("profile-email");
+        const reservationField = document.getElementById("profile-reservation")
         const updateRestaurantsBtn = document.getElementById("update-restaurants-btn");
 
         if (!token) {
             welcomeMessage.innerHTML = "You are not logged in. Please <a href='login.html'>Login</a>.";
             emailField.style.display = "none";
+            reservationField.style.display = "none"
             return;
         }
 
@@ -50,6 +54,7 @@
 
             const data = await response.json();
             emailField.textContent = data.email;
+            reservationField.textContent = localStorage.getItem(data.email) || "None"
             welcomeMessage.innerHTML = `Welcome, <strong>${data.email}</strong>!`;
 
             // Show "Update Restaurants" button if the user is an admin

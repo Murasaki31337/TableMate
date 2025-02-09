@@ -53,7 +53,7 @@
 
             const data = await response.json();
             localStorage.setItem("access_token", data.access_token);
-
+            localStorage.setItem("email", email)
             document.getElementById('message').innerHTML = 'Login successful! Redirecting to profile...';
 
             setTimeout(() => {

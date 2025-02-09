@@ -12,11 +12,11 @@
             margin: 0;
             padding: 0;
         }
-        
+
         h1 {
             margin-top: 20px;
         }
-        
+
         #restaurants-container {
             margin: 20px auto;
             width: 80%;
@@ -49,15 +49,15 @@
 </head>
 <body>
     <div id="header-container"></div>
-        <script>
-                fetch("header.html")
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById("header-container").innerHTML = data;
-        updateHeader();  // Run AFTER header is loaded
-    });
+    <script>
+        fetch("header.html")
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("header-container").innerHTML = data;
+                updateHeader();  // Run AFTER header is loaded
+            });
+    </script>
 
-        </script>
     <h1>Welcome to TableMate</h1>
 
     <div id="restaurants-container">
@@ -68,16 +68,45 @@
     <div id="message"></div>
 
     <script>
+        // Function to check if user is logged in
+        function checkAuth() {
+            const token = localStorage.getItem('access_token');  // Assuming token is stored in localStorage
+            if (!token) {
+                alert('You must be logged in to access this page.');
+                window.location.href = 'login.html';  // Redirect to login page
+                return false;
+            }
+
+            return true;
+        }
+
+        function checkReservation() {
+            const email = localStorage.getItem('email');  // Assuming token is stored in localStorage
+            const reservation = localStorage.getItem(email)
+            if (reservation != null) {
+                alert('You have reservation.');
+                window.location.href = 'profile.html';  // Redirect to login page
+                return false;
+            }
+
+            return true;
+        }
+
         // Function to fetch and display restaurants
         async function getRestaurants() {
             try {
-                const response = await fetch('http://127.0.0.1:8000/restaurants/');
+                const response = await fetch('http://127.0.0.1:8000/restaurants/', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`  // Send token for authentication
+                    }
+                });
+
                 if (!response.ok) {
                     const errorData = await response.text();
-                    throw new Error(`Failed to fetch restaurants: ${response.status} ${errorData}`);                }
+                    throw new Error(`Failed to fetch restaurants: ${response.status} ${errorData}`);
+                }
 
                 const restaurants = await response.json();
-                
                 const restaurantsList = document.getElementById('restaurants-list');
                 restaurantsList.innerHTML = ''; // Clear existing content
 
@@ -91,18 +120,22 @@
                     restaurantDiv.classList.add('restaurant-item');
                     restaurantDiv.textContent = restaurant.name || 'Unnamed Restaurant';  // Display restaurant name
                     restaurantDiv.onclick = () => {
-                        window.location.href = `restaurant.html?name=${restaurant.name}`;
+                        window.location.href = `restaurant.html?name=${encodeURIComponent(restaurant.name)}`;
                     };
                     restaurantsList.appendChild(restaurantDiv);
                 });
-            }  catch (error) {
-            console.error('Error details:', error);
-            document.getElementById('message').textContent = 'Error: ' + error.message;
-        }
+            } catch (error) {
+                console.error('Error details:', error);
+                document.getElementById('message').textContent = 'Error: ' + error.message;
+            }
         }
 
-        // Call the function when the page loads
-        window.onload = getRestaurants;
+        // Check authentication before loading restaurants
+        window.onload = function() {
+            if (checkAuth() && checkReservation()) {
+                getRestaurants();
+            }
+        };
     </script>
 </body>
 </html>
