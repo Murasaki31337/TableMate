@@ -114,3 +114,29 @@ async def update_reservation(restaurant_name: str, update_data: dict):
         raise HTTPException(status_code=500, detail="Failed to update reservation")
 
     return {"message": f"Reservation for {table_type} updated to {quantity}"}
+
+@router.patch("/name/{restaurant_name}/reservations/update")
+async def update_reservation(restaurant_name: str, update_data: dict):
+    """
+    Update the reservation quantity for a specific table type in a restaurant.
+    """
+    table_type = update_data.get("table_type")
+    quantity = update_data.get("quantity")
+
+    if not table_type or quantity is None:
+        raise HTTPException(status_code=400, detail="Table type and quantity are required")
+
+    # Query the reservations collection instead of restaurants
+    reservation = await db.reservations.find_one({"restaurant_name": restaurant_name})
+    if not reservation:
+        raise HTTPException(status_code=404, detail="Reservation data not found for this restaurant")
+
+    # Fix the incorrect key usage
+    update_query = {f"table_types.{table_type}": reservation["table_types"].get(table_type, 0) + quantity}
+    
+    result = await db.reservations.update_one({"restaurant_name": restaurant_name}, {"$set": update_query})
+
+    if result.modified_count == 0:
+        raise HTTPException(status_code=500, detail="Failed to update reservation")
+
+    return {"message": f"Reservation for {table_type} updated to {reservation['table_types'][table_type] + quantity}"}

@@ -20,7 +20,7 @@
         <p><strong>Reservation:</strong> <span id="profile-reservation"></span></p>
 
         <button onclick="logout()">Logout</button>
-        
+        <button onclick="unreserve()">Delete reservation</button>
         <!-- Admin-only button -->
         <button id="update-restaurants-btn" style="display: none;" onclick="location.href='update.html'">Update Restaurants</button>
     </div>
@@ -71,6 +71,63 @@
         localStorage.removeItem("access_token");
         window.location.href = "login.html";
     }
+    async function unreserve() {
+    const token = localStorage.getItem("access_token");
+    const email = document.getElementById("profile-email").textContent;
+
+    if (!token || !email) {
+        alert("You must be logged in to unreserve.");
+        return;
+    }
+
+    const reservationData = localStorage.getItem(email);
+    
+    if (!reservationData) {
+        alert("No reservation found.");
+        return;
+    }
+
+    // Correctly parse restaurant name and table type
+    const match = reservationData.match(/Restaurant:\s*(.*?)\s*-\s*Table type:\s*(.*)/);
+    if (!match) {
+        alert("Invalid reservation data format.");
+        return;
+    }
+
+    let restaurantName = match[1].trim();
+    let tableType = match[2].trim();
+
+    try {
+        const response = await fetch(
+            `http://127.0.0.1:8000/restaurants/name/${encodeURIComponent(restaurantName)}/reservations/update`,
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    table_type: tableType,
+                    quantity: 1  // Increment table availability by 1
+                })
+            }
+        );
+
+        if (!response.ok) {
+            const errorData = await response.text();
+            throw new Error(errorData);
+        }
+
+        // If successful, remove from localStorage and update UI
+        localStorage.removeItem(email);
+        document.getElementById("profile-reservation").textContent = "None";
+        alert("Reservation returned successfully.");
+    } catch (error) {
+        alert("Error returning reservation: " + error.message);
+    }
+}
+
+
 
     document.addEventListener("DOMContentLoaded", fetchProfile);
     </script>

@@ -138,44 +138,47 @@
         }
 
         async function confirmReservation() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const restaurantName = urlParams.get('name');
+    const urlParams = new URLSearchParams(window.location.search);
+    const restaurantName = urlParams.get('name');
 
-            if (!selectedTableType) {
-                document.getElementById('message').textContent = 'Please select a table before confirming.';
-                return;
+    if (!selectedTableType) {
+        document.getElementById('message').textContent = 'Please select a table before confirming.';
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/restaurants/reservations`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                restaurant_name: restaurantName,
+                table_type: selectedTableType
+            })
+        });
+
+        if (response.ok) {
+            // Save reservation in localStorage with email as key
+            const email = localStorage.getItem("email");
+            if (email) {
+                localStorage.setItem(email, `Restaurant: ${restaurantName} - Table type: ${selectedTableType}`);
             }
 
-            try {
-                const response = await fetch(`http://127.0.0.1:8000/restaurants/reservations`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        restaurant_name: restaurantName,
-                        table_type: selectedTableType
-                    })
-                });
+            document.getElementById('message').style.color = 'green';
+            document.getElementById('message').textContent = 'Reservation confirmed!';
 
-                if (response.ok) {
-                    // Save reservation status in localStorage (userId and reserved)
-                    const email = localStorage.getItem("email")
-                    localStorage.setItem(email, restaurantName)
-                    
-                    document.getElementById('message').style.color = 'green';
-                    document.getElementById('message').textContent = 'Reservation confirmed!';
-
-                    window.location.href = 'profile.html';
-                } else {
-                    const errorData = await response.text();
-                    throw new Error(errorData);
-                }
-            } catch (error) {
-                document.getElementById('message').style.color = 'red';
-                document.getElementById('message').textContent = 'Error confirming reservation: ' + error.message;
-            }
+            window.location.href = 'profile.html';
+        } else {
+            const errorData = await response.text();
+            throw new Error(errorData);
         }
+    } catch (error) {
+        document.getElementById('message').style.color = 'red';
+        document.getElementById('message').textContent = 'Error confirming reservation: ' + error.message;
+    }
+}
+
 
         window.onload = loadTableTypes;
     </script>
