@@ -89,13 +89,15 @@
     </style>
 </head>
 <body>
+    <div id="header-container"></div>
+        <script>
+                fetch("header.html")
+                .then(response => response.text())
+                .then(data => document.getElementById("header-container").innerHTML = data);
+        </script>
     <div class="container">
         <div class="section">
             <h2>Restaurant Details</h2>
-            <div class="form-group">
-                <label for="name">Restaurant Name:</label>
-                <input type="text" id="name">
-            </div>
             <div class="form-group">
                 <label for="details">Restaurant Details:</label>
                 <textarea id="details"></textarea>
@@ -125,60 +127,29 @@
 
     <script>
         let restaurantId;
+        const urlParams = new URLSearchParams(window.location.search);
+        const restaurantName = urlParams.get('name');
 
-        async function loadRestaurantData() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const restaurantName = urlParams.get('name');
 
-            if (!restaurantName) {
-                showMessage('Error: No restaurant name provided.', 'error');
-                return;
-            }
 
-            try {
-                const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${restaurantName}`);
-                if (!response.ok) throw new Error('Failed to fetch restaurant data.');
+async function updateRestaurant() {
 
-                const data = await response.json();
-                restaurantId = data._id.$oid; // Store restaurant ID for updating
-                document.getElementById('name').value = data.name;
-                document.getElementById('details').value = data.details || '';
-                document.getElementById('address').value = data.address || '';
-            } catch (error) {
-                showMessage(error.message, 'error');
-            }
-        }
-
-        async function loadReservationData() {
-            try {
-                const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${document.getElementById('name').value}/reservations`);
-                if (!response.ok) throw new Error('Failed to fetch reservations.');
-
-                const reservations = await response.json();
-                const selectedTableType = document.getElementById('table_type').value;
-                if (reservations.table_types[selectedTableType] !== undefined) {
-                    document.getElementById('quantity').value = reservations.table_types[selectedTableType];
-                }
-            } catch (error) {
-                showMessage(error.message, 'error');
-            }
-        }
-
-        async function updateRestaurant() {
     const restaurantData = {
-        name: document.getElementById('name').value,
+        name: restaurantName,
         details: document.getElementById('details').value,
         address: document.getElementById('address').value
     };
 
     try {
-        const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${encodeURIComponent(document.getElementById('name').value)}`, {
+        const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${encodeURIComponent(restaurantName)}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(restaurantData)
         });
-
-        if (!response.ok) throw new Error("Failed to update restaurant details.");
+        
+        if (response.status === 404) throw new Error("Failed to update restaurant details. Restaurant not found");
+        else if (response.status === 400) throw new Error("Failed to update restaurant details. No valid data provided");
+        else if (response.status === 500) throw new Error("Failed to update restaurant details. Already up to date");
         showMessage("Restaurant details updated successfully!", "success");
     } catch (error) {
         showMessage(error.message, "error");
@@ -186,29 +157,30 @@
 }
 
 
-async function updateReservation() {
-    const tableType = document.getElementById("table_type").value;
-    const quantity = parseInt(document.getElementById("quantity").value);
+        async function updateReservation() {
+            const tableType = document.getElementById("table_type").value;
+            const quantity = parseInt(document.getElementById("quantity").value);
+            
+            const reservationData = {
+                table_type: tableType,
+                quantity: quantity
+            };
 
-    const reservationData = {
-        table_type: tableType,
-        quantity: quantity
-    };
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${encodeURIComponent(restaurantName)}/reservations/update`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(reservationData)
+                });
 
-    try {
-        const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${encodeURIComponent(document.getElementById('name').value)}/reservations/update`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(reservationData)
-        });
-
-        if (!response.ok) throw new Error("Failed to update reservation.");
-        showMessage("Reservation updated successfully!", "success");
-    } catch (error) {
-        showMessage(error.message, "error");
-    }
-}
-
+                if (response.status === 404) throw new Error("Failed to update reservation. Restaurant not found");
+            else if (response.status === 400) throw new Error("Failed to update reservation. Quantity are required and must be >= 0!");
+            else if (response.status === 500) throw new Error("Failed to update reservation. Already up to date");
+                showMessage("Reservation updated successfully!", "success");
+            } catch (error) {
+                showMessage(error.message, "error");
+            }
+        }
 
         function showMessage(message, type) {
             const messageDiv = document.getElementById('message');
@@ -217,10 +189,6 @@ async function updateReservation() {
             setTimeout(() => messageDiv.textContent = '', 5000);
         }
 
-        window.onload = () => {
-            loadRestaurantData();
-            loadReservationData();
-        };
     </script>
 </body>
 </html>

@@ -84,7 +84,8 @@
                     restaurantDiv.classList.add('restaurant-item');
                     restaurantDiv.textContent = restaurant.name || 'Unnamed Restaurant';
                     restaurantDiv.onclick = () => {
-                        window.location.href = `change.html?id=${restaurant.id}`;
+                        // Use restaurant name to navigate to the change.html page
+                        window.location.href = `change.html?name=${encodeURIComponent(restaurant.name)}`;
                     };
                     restaurantsList.appendChild(restaurantDiv);
                 });
@@ -93,7 +94,35 @@
             }
         }
 
-        window.onload = getRestaurants;
+        // Function to extract restaurant name from URL query params
+        function getRestaurantName() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('name');
+        }
+
+        // async function loadRestaurantData() {
+        //     const restaurantName = getRestaurantName();
+        //     if (!restaurantName) {
+        //         document.getElementById('message').textContent = 'Error: No restaurant name provided.';
+        //         return;
+        //     }
+
+        //     try {
+        //         const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${encodeURIComponent(restaurantName)}`);
+        //         if (!response.ok) throw new Error('Failed to fetch restaurant data.');
+
+        //         const data = await response.json();
+        //         document.getElementById('message').textContent = `Selected Restaurant: ${data.name}`;
+        //         // You can also populate form fields here if needed
+        //     } catch (error) {
+        //         document.getElementById('message').textContent = error.message;
+        //     }
+        // }
+
+        window.onload = () => {
+            getRestaurants();
+            // loadRestaurantData();
+        };
     </script>
 </body>
 </html>
