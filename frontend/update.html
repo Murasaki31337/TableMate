@@ -31,6 +31,9 @@
             padding: 10px;
             border-bottom: 1px solid #ddd;
             cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .restaurant-item:last-child {
@@ -45,6 +48,69 @@
             margin-top: 20px;
             color: red;
         }
+
+        /* Plus button */
+        .add-restaurant {
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px 10px;
+            border: none;
+            background-color: transparent;
+            color: green;
+        }
+
+        /* Popup Styles */
+        #popup-container {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: left;
+        }
+
+        #popup-container .form-group {
+            margin-bottom: 10px;
+        }
+
+        #popup-container input, 
+        #popup-container textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .popup-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .popup-buttons button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .save-btn {
+            background-color: green;
+            color: white;
+        }
+
+        .cancel-btn {
+            background-color: red;
+            color: white;
+        }
+
     </style>
 </head>
 <body>
@@ -60,9 +126,31 @@
     <div id="restaurants-container">
         <h2>Available Restaurants</h2>
         <div id="restaurants-list"></div>
+        <button class="add-restaurant" onclick="openPopup()">+</button>
     </div>
 
     <div id="message"></div>
+
+    <!-- Popup for Adding a Restaurant -->
+    <div id="popup-container">
+        <h2>Add New Restaurant</h2>
+        <div class="form-group">
+            <label for="restaurant-name">Restaurant Name:</label>
+            <input type="text" id="restaurant-name">
+        </div>
+        <div class="form-group">
+            <label for="address">Address:</label>
+            <input type="text" id="address">
+        </div>
+        <div class="form-group">
+            <label for="details">Details:</label>
+            <textarea id="details"></textarea>
+        </div>
+        <div class="popup-buttons">
+            <button class="save-btn" onclick="addNewRestaurant()">Save</button>
+            <button class="cancel-btn" onclick="closePopup()">Cancel</button>
+        </div>
+    </div>
 
     <script>
         async function getRestaurants() {
@@ -84,7 +172,7 @@
                     restaurantDiv.classList.add('restaurant-item');
                     restaurantDiv.textContent = restaurant.name || 'Unnamed Restaurant';
                     restaurantDiv.onclick = () => {
-                        // Use restaurant name to navigate to the change.html page
+                        // Navigate to the edit page
                         window.location.href = `change.html?name=${encodeURIComponent(restaurant.name)}`;
                     };
                     restaurantsList.appendChild(restaurantDiv);
@@ -94,34 +182,51 @@
             }
         }
 
-        // Function to extract restaurant name from URL query params
-        function getRestaurantName() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('name');
+        function openPopup() {
+            document.getElementById('popup-container').style.display = 'block';
         }
 
-        // async function loadRestaurantData() {
-        //     const restaurantName = getRestaurantName();
-        //     if (!restaurantName) {
-        //         document.getElementById('message').textContent = 'Error: No restaurant name provided.';
-        //         return;
-        //     }
+        function closePopup() {
+            document.getElementById('popup-container').style.display = 'none';
+        }
 
-        //     try {
-        //         const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${encodeURIComponent(restaurantName)}`);
-        //         if (!response.ok) throw new Error('Failed to fetch restaurant data.');
+        async function addNewRestaurant() {
+            const restaurantName = document.getElementById('restaurant-name').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const details = document.getElementById('details').value.trim();
 
-        //         const data = await response.json();
-        //         document.getElementById('message').textContent = `Selected Restaurant: ${data.name}`;
-        //         // You can also populate form fields here if needed
-        //     } catch (error) {
-        //         document.getElementById('message').textContent = error.message;
-        //     }
-        // }
+            if (!restaurantName) {
+                alert("Please provide a name for the restaurant.");
+                return;
+            }
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/restaurants/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: restaurantName,
+                        address: address,
+                        details: details
+                    })
+                });
+
+                if (!response.ok) throw new Error(`Failed to create restaurant: ${response.status}`);
+
+                // Refresh the restaurant list after adding the new restaurant
+                getRestaurants();
+                closePopup();
+
+                alert("Restaurant added successfully!");
+            } catch (error) {
+                document.getElementById('message').textContent = 'Error: ' + error.message;
+            }
+        }
 
         window.onload = () => {
             getRestaurants();
-            // loadRestaurantData();
         };
     </script>
 </body>

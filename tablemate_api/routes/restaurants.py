@@ -10,6 +10,41 @@ async def get_restaurants():
         restaurant["_id"] = str(restaurant["_id"])  
     return restaurants
 
+@router.post("/")
+async def create_restaurant(restaurant: dict):
+    """
+    Add a new restaurant to the database.
+    """
+    name = restaurant.get("name")
+    address = restaurant.get("address")
+    details = restaurant.get("details")
+
+    # Validate input fields
+    if not name or not address or not details:
+        raise HTTPException(status_code=400, detail="All fields (name, address, details) are required.")
+
+    # Check if a restaurant with the same name already exists
+    existing_restaurant = await db.restaurants.find_one({"name": name})
+    if existing_restaurant:
+        raise HTTPException(status_code=400, detail="Restaurant already exists")
+
+    # Insert into MongoDB
+    new_restaurant = {"name": name, "address": address, "details": details}
+    result = await db.restaurants.insert_one(new_restaurant)
+    await db.reservations.insert_one({
+        "restaurant_name": name,
+        "table_types": {
+            "couple": 20,
+            "family": 20,
+            "party": 20
+        }
+    })
+
+    if not result.inserted_id:
+        raise HTTPException(status_code=500, detail="Failed to create restaurant")
+
+    return {"message": "Restaurant created successfully", "restaurant_id": str(result.inserted_id)}
+
 
 @router.get("/{name}")
 async def get_restaurant_by_name(name: str):
