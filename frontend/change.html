@@ -121,7 +121,11 @@
             <input type="number" id="quantity" min="0">
             <button class="primary-btn" onclick="updateReservation()">Update Reservation</button>
         </div>
-
+        <div class="section">
+            <h2>Delete Restaurant</h2>
+            <button class="delete-btn" onclick="deleteRestaurant()">Delete Restaurant</button>
+        </div>
+        
         <div id="message"></div>
     </div>
 
@@ -189,6 +193,36 @@ async function updateRestaurant() {
             setTimeout(() => messageDiv.textContent = '', 5000);
         }
 
+
+        async function deleteRestaurant() {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/restaurants/name/${encodeURIComponent(restaurantName)}`, {
+                method: "DELETE"
+            });
+
+            if (response.status === 404) throw new Error("Restaurant not found");
+            if (response.status === 500) throw new Error("Failed to delete restaurant");
+
+            // Step 2: Remove all reservations for the restaurant from localStorage
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            const value = localStorage.getItem(key);
+
+            if (value && value.includes(`Restaurant: ${restaurantName}`)) {
+                localStorage.removeItem(key); // Remove any reservation related to this restaurant
+            }
+        }
+
+            showMessage("Restaurant and its reservations deleted successfully!", "success");
+            alert("Redirecting after deletion!!!")
+            window.location.href = "update.html";
+        } catch (error) {
+            showMessage(error.message, "error");
+        }
+
+        
+
+    }
     </script>
 </body>
 </html>

@@ -138,3 +138,27 @@ async def update_reservation(restaurant_name: str, update_data: dict):
         raise HTTPException(status_code=500, detail="Failed to update reservation")
 
     return {"message": f"Reservation for {table_type} updated to {reservation['table_types'][table_type] + quantity}"}
+
+
+@router.delete("/name/{restaurant_name}")
+async def delete_restaurant(restaurant_name: str):
+    """
+    Delete a restaurant by name, along with its associated reservations.
+    """
+    # Find the restaurant
+    restaurant = await db.restaurants.find_one({"name": restaurant_name})
+    if not restaurant:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
+
+    # Delete the restaurant
+    delete_result = await db.restaurants.delete_one({"name": restaurant_name})
+    delete_result = await db.reservations.delete_one({"restaurant_name": restaurant_name})
+    # If no restaurant was deleted
+    if delete_result.deleted_count == 0:
+        raise HTTPException(status_code=500, detail="Failed to delete restaurant")
+
+    # Also remove any reservations linked to this restaurant
+    await db.reservations.delete_one({"restaurant_name": restaurant_name})
+
+    return {"message": f"Restaurant '{restaurant_name}' and its reservations have been deleted successfully."}
+
