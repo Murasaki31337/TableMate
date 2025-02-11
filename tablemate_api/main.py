@@ -4,6 +4,7 @@ from tablemate_api.routes.protected_routes import router as protected_router
 from tablemate_api.routes.restaurants import router as restaurants_router
 from tablemate_api.routes.profile_info import router as profile_info
 from tablemate_api.middleware import add_cors
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 add_cors(app)
@@ -12,6 +13,7 @@ app.include_router(profile_info)
 app.include_router(auth_router)
 app.include_router(protected_router)
 app.include_router(restaurants_router)
-@app.get("/")
-def home():
-    return {"message": "Welcome to TableMate API"}
+app.mount("/", StaticFiles(directory="tablemate_api/frontend", html=True), name="frontend")
+# @app.get("/")
+# def home():
+#     return {"message": "Welcome to TableMate API! Go into tablemate_api/frontend/index.html"}

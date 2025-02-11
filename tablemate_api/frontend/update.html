@@ -155,7 +155,7 @@
     <script>
         async function getRestaurants() {
             try {
-                const response = await fetch('http://127.0.0.1:8000/restaurants/');
+                const response = await fetch('https://tablemate.onrender.com/restaurants/');
                 if (!response.ok) throw new Error(`Failed to fetch restaurants: ${response.status}`);
 
                 const restaurants = await response.json();
@@ -201,7 +201,7 @@
             }
 
             try {
-                const response = await fetch('http://127.0.0.1:8000/restaurants/', {
+                const response = await fetch('https://tablemate.onrender.com/restaurants/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

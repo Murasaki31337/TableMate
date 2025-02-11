@@ -41,7 +41,7 @@
         }
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/users/me", {
+            const response = await fetch("https://tablemate.onrender.com/users/me", {
                 method: "GET",
                 headers: {
                     "Authorization": "Bearer " + token
@@ -99,7 +99,7 @@
 
     try {
         const response = await fetch(
-            `http://127.0.0.1:8000/restaurants/name/${encodeURIComponent(restaurantName)}/reservations/update`,
+            `https://tablemate.onrender.com/restaurants/name/${encodeURIComponent(restaurantName)}/reservations/update`,
             {
                 method: "PATCH",
                 headers: {

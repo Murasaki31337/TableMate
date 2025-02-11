@@ -101,7 +101,7 @@
             }
 
             try {
-                const response = await fetch(`http://127.0.0.1:8000/restaurants/${encodeURIComponent(restaurantName)}/reservations`);
+                const response = await fetch(`https://tablemate.onrender.com/restaurants/${encodeURIComponent(restaurantName)}/reservations`);
                 const data = await response.json();
 
                 if (data.table_types && Object.keys(data.table_types).length === 0) {
@@ -150,7 +150,7 @@
                 confirmBtn.disabled = true;  // Disable button to prevent multiple clicks
                 confirmBtn.textContent = "Processing...";
                 
-                const response = await fetch(`http://127.0.0.1:8000/restaurants/reservations`, {
+                const response = await fetch(`https://tablemate.onrender.com/restaurants/reservations`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
